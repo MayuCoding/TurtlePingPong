@@ -1,129 +1,128 @@
-import turtle as tur
 
-def make_window(title, color):
-    farm = tur.Screen()
-    farm.setup(width=850,height=750)
-    farm.bgcolor(color)
-    farm.title(title)
+#Import the required modules
+import turtle
 
-    return farm
+#Create the game screen
+windw = turtle.Screen()
+windw.title("Ping Pong Game Turtle vs Panda")
+windw.bgcolor("green")
+windw.setup(width=1000, height=800)
+windw.tracer(0)
 
-def make_paddle(spd, shape, color, size=(6,2),pos=(400,0)):
-    paddle = tur.Turtle()
-    paddle.speed(spd)
-    paddle.shape(shape)
-    paddle.color(color)
-    paddle.shapesize(stretch_wid=size[0], stretch_len=size[1])
-    paddle.penup()
-    paddle.goto(pos)
+#Create the score to count scores
+score_right = 0
+score_left = 0
 
-    return paddle
+#Create the left paddle of the game
+player_turtle = turtle.Turtle()
+player_turtle.speed(1)
+player_turtle.shape("square")
+player_turtle.shapesize(stretch_wid=5, stretch_len=1)
+player_turtle.color("black")
+player_turtle.penup()
+player_turtle.goto(-(windw.window_width()/2 + 50), 0)
 
-def make_ball(spd, shape, color, size=(2,2),velX=5, velY=-5):
-    ball=tur.Turtle()
-    ball.speed(spd)
-    ball.shape(shape)
-    ball.color(color)
-    ball.penup()
-    ball.shapesize(stretch_wid=size[0], stretch_len=size[1])
-    ball.dx = velX
-    ball.dy = velY
+#Create the right paddle of the game
+player_panda = turtle.Turtle()
+player_panda.speed(1)
+player_panda.shape("square")
+player_panda.shapesize(stretch_wid=5, stretch_len=1)
+player_panda.color("black")
+player_panda.penup()
+player_panda.goto((windw.window_width()/2 - 50), 0)
 
-    return ball
+#Creating the white ball
+ball = turtle.Turtle()
+ball.speed(8)
+ball.shape("circle")
+ball.color("white")
+ball.penup()
+ball.goto(0, 0)
+ball.dx = 0.2
+ball.dy = -0.2
 
-def sketcher(color="purple", score=(0,0)):
-    sketcher=tur.Turtle()
-    sketcher.speed(0)
-    sketcher.color(color)
-    sketcher.goto(0, 260)
-    sketcher.penup()
-    sketcher.hideturtle()
-    sketcher.clear()
-    sketcher.write(f"Left Player: {score[0]}\t\tRight Player: {score[1]}",
-    align="center", font=("Courier", 24, "normal"))
+#Creating the pen to record players' scores
+records_pos = 260
 
+pen = turtle.Turtle()
+pen.speed(1)
+pen.shape("circle")
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0, records_pos)
+pen.write("Player Panda: 0 Player Turtle: 0", align="center", font=("Courier", 28, "normal"))
 
+#Creating function to play the game
 
+def player_turtle_up():
+    y = player_turtle.ycor()
+    y += 20
+    player_turtle.sety(y)
 
+def player_turtle_down():
+    y = player_turtle.ycor()
+    y -= 20
+    player_turtle.sety(y)
 
-def main():
-    table = make_window("Ping Pong Table", "purple")
-    ball = make_ball(10, "circle", "orange")
+def player_panda_up():
+    y = player_panda.ycor()
+    y += 20
+    player_panda.sety(y)
 
-
-    left_player = make_paddle(0, "square", "green", (6,2), (-400, 0))
-    right_player = make_paddle(0, "square", "green", (6,2), (400, 0))
-
-    def leftPaddleUp():
-        l_up = left_player.ycor()
-        l_up += 20
-        left_player.sety(l_up)
-
-        
-    def leftPaddleDn():
-        l_dn = left_player.ycor()
-        l_dn -= 20
-        left_player.sety(l_dn)
-        
-
-    def rightPaddleUp():
-        r_up = right_player.ycor()
-        r_upy += 20
-        right_player.sety(r_up)
-        
-    def rightPaddleDn():
-        r_dn = right_player.ycor()
-        r_dn -= 20
-        right_player.sety(r_dn)
-
-    table.listen()
-    table.onkeypress(rightPaddleUp, "w")
-    table.onkeypress(rightPaddleDn, "s")
-    table.onkeypress(leftPaddleUp, "Up")
-    table.onkeypress(leftPaddleDn, "Down")
-
-    while True:
-        table.update()
-
-        ball.sety(ball.ycor() + ball.dy)
-        ball.setx(ball.xcor() + ball.dx)
-
-        left_score = 0
-        right_score = 0
+def player_panda_down():
+    y = player_panda.ycor()
+    y -= 20
+    player_panda.sety(y)
 
 
-        if ball.ycor() > 280:
-            ball.sety(280)
-            ball.dy *= -1
-       
-       
-        if ball.ycor() < 280:
-            ball.sety(-280)
-            ball.dy *= -1
+#Creating the keyboard bindings to use when playing the game
+windw.listen()
+windw.onkeypress(player_turtle_up, "w")
+windw.onkeypress(player_turtle_down, "s")
+windw.onkeypress(player_panda_up, "Up")
+windw.onkeypress(player_panda_down, "Down")
 
-        if ball.xcor() > 500:
-            ball.goto(0,0)
-            ball.dy *= -1
-            right_score += 1
-            sketcher("purple",score=(left_score, right_score))
-        
-        
-        if ball.xcor() < -500:
-            ball.goto(0,0)
-            ball.dy *= -1
-            left_score += 1
-            sketcher("purple",score=(left_score, right_score))
 
-        if (ball.xcor() > (left_player.pos()[0] - 40) and ball.xcor() < 370) \
-            and ball.ycor() < ((left_player.pos()[1] + 40)) \
-                and ball.ycor()> ((right_player.pos()[1] - 40)):
-            ball.setx(360)
-            ball.dx *= -1
-        
-        if (ball.xcor() < (right_player.pos()[0] - 40) and ball.xcor() > -370) \
-            and ball.ycor()<((right_player.pos()[1] + 40)) \
-                and ball.ycor()>((right_player.pos()[1] - 40)):
-            ball.setx(-360)
-            ball.dx *= -1
+#Create the main game looping function
+while True:
+    windw.update()
 
-main()    
+    #Moving the ball
+    ball.setx(ball.xcor() + ball.dx)
+    ball.sety(ball.ycor() + ball.dy)
+
+
+    #Checking the border on top, bottom, rigt, and left
+    if ball.ycor() > (records_pos - 20):
+        ball.sety((records_pos - 20))
+        ball.dy *= -1
+
+    elif ball.ycor() < -(windw.window_height()/2 + 20):
+        ball.sety(-(windw.window_height()/2 + 20))
+        ball.dy *= -1
+
+    if ball.xcor() > player_panda.pos()[0] + 100:
+        score_left += 1
+        pen.clear()
+        pen.write("Player Turtle: {} Player Panda: {}".format(score_left, score_right), align="center", font=("Courier", 28, "normal"))
+        ball.goto(0, 0)
+        windw.delay(2000)
+        ball.dx *= -1
+
+    elif ball.xcor() < player_turtle.pos()[0] - 100:
+        score_right += 1
+        pen.clear()
+        pen.write("Player Turtle: {} Player Panda: {}".format(score_left, score_right), align="center", font=("Courier", 28, "normal"))
+        ball.goto(0, 0)
+        windw.delay(2000)
+        ball.dx *= -1
+
+    #Paddle and the ball collisions solution
+    if ball.xcor() < player_turtle.pos()[0] + 20 and ball.pos()[1] < player_turtle.pos()[1] + 50 and ball.pos()[1] > player_turtle.pos()[1] - 50:
+        ball.setx(player_turtle.pos()[0] + 20)
+        ball.dx *= -1
+
+    elif ball.xcor() > player_panda.pos()[0] - 20 and ball.pos()[1] < player_panda.pos()[1] + 50 and ball.pos()[1] > player_panda.pos()[1] - 50:
+        ball.setx(player_panda.pos()[0] - 20)
+        ball.dx *= -1
